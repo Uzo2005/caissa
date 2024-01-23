@@ -58,7 +58,7 @@ const
     pieceTint = White
     piecePadding = (squareSize div 5) div 2
     gameStartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    afterE4Fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+    # afterE4Fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
     samplePgn = readfile(gamesResourcePath & "sample.pgn")
 
 
@@ -199,7 +199,7 @@ proc gameMoves(pgnGame: ChessGame): iterator(): tuple[move: ChessMove, score: Ga
             yield (move: chessMove, score: pgnGame.outcome)
 
 
-proc updateBoardTextureWithState(boardTexture: RenderTexture2D, state: BoardState) =
+proc updateWithGameState(boardTexture: RenderTexture2D, state: BoardState) =
     beginTextureMode(boardTexture)
     defer: endTextureMode()
 
@@ -223,13 +223,13 @@ while(not windowShouldClose()):
     drawTexture(boardTexture.texture, boardTextureFlipped,
         windowCenterPositionForBoard, windowOrigin, 0, White)
         
-    boardTexture.updateBoardTextureWithState(boardState)
+    boardTexture.updateWithGameState(boardState)
 
     endDrawing()
 
     if isKeyPressed(Space):
-        let d4MoveInfo = parsePgnMoveText(samplePgn).chessMoves[0].whiteMove
-        boardState.updateBoardStateWithMoveInfo(d4MoveInfo)
+        let d4MoveInfo = parsePgn(samplePgn).chessMoves[13].whiteMove
+        boardState.updateBoardStateWithMove(d4MoveInfo)
         # boardState.isWhiteActive = not boardState.isWhiteActive
         # boardState.piecePlacement = parseFen(afterE4Fen).piecePlacement
         # pauseSound(classicalMusic)

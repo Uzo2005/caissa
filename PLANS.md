@@ -1,0 +1,1 @@
+so basically I parse a pgn which outputs chessmoves, then I cycle through the chess moves and update the board state, which updates the board ui.

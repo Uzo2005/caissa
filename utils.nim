@@ -1,54 +1,44 @@
 import ./parsePgn, ./parseFen
 
-# MoveInfo* = object
-#         isCheck: bool
-#         isCheckMate: bool
-#         isCaptureMove: bool
-#         case isCastleMove: bool
-#             of true:
-#                 castleType: CastlingType
-#             else:
-#                 moveInfo: tuple[piece: AllChessPieces, col: int, row: int]
-        
-#         case isHighlyAmbiguousMove: bool #when both file and rank info will clarify move
-#             of true:
-#                     currentCol: int
-#                     currentRow: int
-#             else:
-#                 case isSlightlyAmbiguousMove: bool #when either file or rank info will clarify move
-#                     of true:
-#                         case fileInfoCanClarify: bool
-#                             of true:
-#                                 currentColInfo: int
-#                             else:
-#                                 currentRowInfo: int
-#                     else:
-#                         discard
-
-proc updateBoardStateWithMoveInfo*(prevState: var BoardState, newMoveInfo: MoveInfo) =
+func convertPieceToChar(chesspiece: ChessPiece): char =
+    case `chessPiece`:
+        of King : 
+            return 'K'
+        of Queen : 
+            return 'Q'
+        of Knight : 
+            return 'N'
+        of Bishop : 
+            return 'B'
+        of Rook : 
+            return 'R'
+        of Pawn : 
+            return 'P'
+        of NoPiece:
+            return ' '
+proc updateBoardStateWithMove*(prevState: var BoardState, newMoveInfo: MoveInfo) =
     if not(newMoveInfo.isCastleMove):
         let 
-            index = (newMoveInfo.moveInfo.col * 8) + newMoveInfo.moveInfo.row
+            
+            nextIndex =  (8*(8 - newMoveInfo.moveInfo.nextRow)) - (8 - newMoveInfo.moveInfo.nextCol) #this shit needs serious refactoring
 
-        prevState.piecePlacement[index] = 'P'
-
-
-        # echo newMoveInfo.moveInfo
-
-var
-    boardState = parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
+        prevState.piecePlacement[nextIndex] = convertPieceToChar(newMoveInfo.moveInfo.piece)
 
 
-const 
-    gamesResourcePath = "./resources/games/"
-let
-    samplePgn = readfile(gamesResourcePath & "sample.pgn")
-    d4MoveInfo = parsePgnMoveText(samplePgn).chessMoves[0].whiteMove
+# var
+#     boardState = parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
 
-# echo boardState.piecePlacement
-echo "--------------------------------------------------------------"
 
-# boardState.updateBoardStateWithMoveInfo(d4MoveInfo)
+# const 
+#     gamesResourcePath = "./resources/games/"
+# let
+#     samplePgn = readfile(gamesResourcePath & "sample.pgn")
+#     d4MoveInfo = parsePgn(samplePgn).chessMoves[0].whiteMove
 
-# echo boardState.piecePlacement
+# # echo boardState.piecePlacement
+# echo "--------------------------------------------------------------"
+
+# # boardState.updateBoardStateWithMove(d4MoveInfo)
+
+# # echo boardState.piecePlacement
 
